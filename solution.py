@@ -22,7 +22,7 @@ def welcome_assignment_answers(question):
     elif question == "What layer of the TCP/IP model the protocol TCP belongs to? - The answer should be a numeric number":
         answer = 4
     return(answer)
-# Complete all the questions.
+# Complete all the questions
 
 
 if __name__ == "__main__":
