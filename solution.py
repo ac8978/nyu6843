@@ -2,7 +2,7 @@
 from socket import *
 import sys
 
-def webServer(port):
+def webServer(port=13331):
 
     serverSocket = socket(AF_INET, SOCK_STREAM)
     serverSocket.bind(('localhost', port))
