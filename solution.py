@@ -1,50 +1,39 @@
 #import socket module
 from socket import *
-import sys # In order to terminate the program
+import sys
 
-def webServer(port=13331):
+def webServer(port):
+
     serverSocket = socket(AF_INET, SOCK_STREAM)
-
-    #Prepare a sever socket
-    serverSocket.bind(("", port))
-    #Fill in start
-
-    #Fill in end
+    serverSocket.bind(('localhost', port))
+    serverSocket.listen(5)
 
     while True:
-        #Establish the connection
-        print('Ready to serve...')
-        connectionSocket, addr = #Fill in start      #Fill in end
+        connectionSocket, addr = serverSocket.accept()
         try:
-            message = #Fill in start    #Fill in end
+            message = connectionSocket.recv(1024).decode()
             filename = message.split()[1]
-            f = open(filename[1:])
-            outputdata = #Fill in start     #Fill in end
-
-            #Send one HTTP header line into socket
-            #Fill in start
-
-            #Fill in end
-
-            #Send the content of the requested file to the client
+            f = open(filename[1:], "r")
+            outputdata = f.read()
+            #connectionSocket.send('\n') #blank line - necessary
+            #connectionSocket.send('HTTP/1.1 200 OK\n')
+            #connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n')
+            #connectionSocket.send('Connection: close\n')
+            #connectionSocket.send('Content-Length: 120\n')
+            #connectionSocket.send('Content-Type: text/html\n')
+            connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n'.encode())
             for i in range(0, len(outputdata)):
                 connectionSocket.send(outputdata[i].encode())
-
-            connectionSocket.send("\r\n".encode())
+            connectionSocket.send('\r\n\r\n'.encode())
             connectionSocket.close()
+
         except IOError:
-            #Send response message for file not found (404)
-            #Fill in start
-
-            #Fill in end
-
-            #Close client socket
-            #Fill in start
-
-            #Fill in end
+            connectionSocket.send('HTTP/1.1 404 File Not Found\r\n\r\n'.encode())
+            connectionSocket.send('404 File Not Found'.encode())
+            connectionSocket.close()
 
     serverSocket.close()
     sys.exit()  # Terminate the program after sending the corresponding data
 
 if __name__ == "__main__":
-    webServer(13331)
+   webServer(13331)
