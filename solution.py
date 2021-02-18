@@ -19,6 +19,7 @@ def webServer(port=13331):
        filename = message.split()[1]
        f = open(filename[1:], "r")
        outputdata = f.read()
+       f.close()
        #Send one HTTP header line into socket
        #connectionSocket.send('\n') #blank line - necessary
        #connectionSocket.send('HTTP/1.1 200 OK\n')
