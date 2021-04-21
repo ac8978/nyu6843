@@ -1,4 +1,5 @@
 from socket import *
+import statistics
 import os
 import sys
 import struct
@@ -47,10 +48,18 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         timeReceived = time.time()
         recPacket, addr = mySocket.recvfrom(1024)
 
-        # Fill in start
-
-        # Fetch the ICMP header from the IP packet
-
+        icmp_header = recPacket[20:28]
+        type, code, check_sum, packetid, seq = struct.unpack("bbHHh", icmp_header)
+        bytes = struct.calcsize("d")
+        timeSent = struct.unpack("d", recPacket[28: 28 + bytes])[0]
+        timeDiff = (timeReceived - timeSent) * 1000
+        ip_header = recPacket[:20]
+        version, type, length, id, flags, ttl, protocol, checksum, src_ip, dest_ip = struct.unpack("BBHHHBBH4s4s", ip_header)
+        #unpacked_data = struct.unpack(struct_format , ip_header)
+        ttl = ip_header[5]
+        return(bytes, timeDiff,ttl)
+    
+    
         # Fill in end
         timeLeft = timeLeft - howLongInSelect
         if timeLeft <= 0:
@@ -107,14 +116,39 @@ def ping(host, timeout=1):
     print("")
     # Calculate vars values and return them
     #  vars = [str(round(packet_min, 2)), str(round(packet_avg, 2)), str(round(packet_max, 2)),str(round(stdev(stdev_var), 2))]
+
+    #reguarl code
+    packet_list = []
+    packet_min = 9999999999999999999999.00
+    packet_max = 0.00
+    packet_avg = 0.00
+    stdev_var = 0.00
+    
+    
+    
+    
     # Send ping requests to a server separated by approximately one second
     for i in range(0,4):
+        #reguarl code
         delay = doOnePing(dest, timeout)
-        print(delay)
+        if float(delay[1]) < float(packet_min):
+            packet_min = delay[1]
+        if float(delay[1]) > float(packet_max):
+            packet_max = delay[1]
+        packet_list.append(float(delay[1]))
+        print("Reply from " + dest + ": bytes=" + str(delay[0]) + " time=" + str(delay[1]) + "ms TTL=" + str(delay[2]))
+        #reguarl code
         time.sleep(1)  # one second
 
+	    packet_avg = statistics.mean(packet_list)
+    stdev_var = statistics.pstdev(packet_list)
+    vars = [float(round(packet_min, 2)), float(round(packet_avg, 2)), float(round(packet_max, 2)),float(round(stdev_var, 2))]
+            
     return vars
 
 if __name__ == '__main__':
-    ping("google.co.il")
+    #ping("google.com")
+    #ping("google.ru")
+    #ping("google.mx")
+    ping("127.0.0.1")
     
