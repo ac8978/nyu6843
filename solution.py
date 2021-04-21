@@ -140,7 +140,7 @@ def ping(host, timeout=1):
         #reguarl code
         time.sleep(1)  # one second
 
-	    packet_avg = statistics.mean(packet_list)
+    packet_avg = statistics.mean(packet_list)
     stdev_var = statistics.pstdev(packet_list)
     vars = [float(round(packet_min, 2)), float(round(packet_avg, 2)), float(round(packet_max, 2)),float(round(stdev_var, 2))]
             
